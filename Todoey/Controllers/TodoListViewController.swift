@@ -11,8 +11,7 @@ import UIKit
 class TodoListViewController: UITableViewController {
     
     var itemArray = [Item]()
-    
-    let defaults = UserDefaults.standard
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
@@ -24,9 +23,7 @@ class TodoListViewController: UITableViewController {
                 newItem.title = text
                 self.itemArray.append(newItem)
                 
-                self.defaults.setValue(self.itemArray, forKey: K.TodoListArrayKey)
-                
-                self.tableView.reloadData()
+                self.saveItems()
             }
         }
         
@@ -54,7 +51,7 @@ class TodoListViewController: UITableViewController {
         newItem3.title = "Destroy Demogorgon"
         itemArray.append(newItem3)
         
-//        if let items = defaults.array(forKey: K.TodoListArrayKey) as? [String] {
+//        if let items = defaults.array(forKey: K.TodoListArrayKey) as? [Item] {
 //            itemArray = items
 //        }
     }
@@ -79,9 +76,22 @@ class TodoListViewController: UITableViewController {
         let item = itemArray[indexPath.row]
         item.done = !item.done
         
-        tableView.reloadData()
+        saveItems()
         
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    //MARK: - Model manipulation methods
+    func saveItems() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item array, \(error)")
+        }
+        
+        tableView.reloadData()
     }
 }
 
