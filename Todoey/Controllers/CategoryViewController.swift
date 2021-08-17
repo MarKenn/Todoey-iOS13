@@ -60,7 +60,7 @@ class CategoryViewController: UITableViewController {
 
     // MARK: - Table view data delegates
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "", sender: <#T##Any?#>)
+        performSegue(withIdentifier: K.GoToItems, sender: self)
     }
 
     
@@ -83,5 +83,15 @@ class CategoryViewController: UITableViewController {
         }
         
         tableView.reloadData()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == K.GoToItems {
+            let destinationVC = segue.destination as! TodoListViewController
+            
+            if let indexPath = tableView.indexPathForSelectedRow {
+                destinationVC.selectedCategory = categories[indexPath.row]
+            }
+        }
     }
 }
